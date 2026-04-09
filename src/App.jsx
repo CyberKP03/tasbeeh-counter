@@ -5,15 +5,37 @@ const BEAD_SIZE = 80;
 const BEAD_GAP = 15;
 const STEP = BEAD_SIZE + BEAD_GAP; // 95
 
+const getTasbeehCount = (p) => {
+  const cycle = Math.floor(p / 102);
+  const rem = p % 102;
+  let offset = 0;
+  if (rem === 0) offset = 0;
+  else if (rem <= 33) offset = rem;
+  else if (rem === 34) offset = 33;
+  else if (rem <= 67) offset = rem - 1;
+  else if (rem === 68) offset = 66;
+  else if (rem <= 101) offset = rem - 2;
+  return cycle * 100 + offset;
+};
+
+const getDisplayCount = (p, currentMode) => {
+  if (currentMode === 'tasbeeh') {
+    return getTasbeehCount(p);
+  }
+  return p;
+};
+
 function App({ allowMaala = false }) {
   const [mode, setMode] = useState("tasbeeh"); // "tasbeeh" or "maala"
-  const [count, setCount] = useState(0);
+  const [position, setPosition] = useState(0);
   const [maxCount, setMaxCount] = useState(100);
   const [animating, setAnimating] = useState(false);
   const containerRef = useRef(null);
 
+  const displayCount = getDisplayCount(position, mode);
+
   const handleChant = () => {
-    if (animating || count >= maxCount) return;
+    if (animating || displayCount >= maxCount) return;
     
     // Optionally trigger a subtle vibration if supported
     if (navigator.vibrate) {
@@ -22,21 +44,21 @@ function App({ allowMaala = false }) {
     
     setAnimating(true);
     setTimeout(() => {
-      setCount((c) => c + 1);
+      setPosition((p) => p + 1);
       setAnimating(false);
     }, 200);
   };
 
   const handleReset = (e) => {
     e.stopPropagation(); // prevent chanting
-    setCount(0);
+    setPosition(0);
   };
 
   const toggleMode = (newMode, e) => {
     e.stopPropagation();
     if (mode === newMode) return;
     setMode(newMode);
-    setCount(0);
+    setPosition(0);
     setMaxCount(newMode === 'tasbeeh' ? 100 : 108);
   };
 
@@ -46,20 +68,22 @@ function App({ allowMaala = false }) {
   const getBeadClass = (beadIndex) => {
     let classes = "bead ";
     
-    if (beadIndex === 0 || beadIndex === maxCount) {
-      classes += " imam"; 
-    } else if (mode === "tasbeeh") {
-      if (beadIndex % 33 === 0) {
-        classes += " marker";
+    if (mode === "tasbeeh") {
+      const rem = beadIndex % 102;
+      if (rem === 0) {
+        classes += " imam"; 
+      } else if (rem === 34 || rem === 68) {
+        classes += " mini-yellow";
       }
     } else if (mode === "maala") {
-      // If user sets a very high max count, and we still want a breakpoint at 108
-      if (beadIndex % 108 === 0) {
+      if (beadIndex === 0 || beadIndex === maxCount) {
+        classes += " imam"; 
+      } else if (beadIndex % 108 === 0) {
         classes += " marker";
       }
     }
 
-    if (beadIndex === count) {
+    if (beadIndex === position) {
       classes += " glow";
     }
     return classes;
@@ -88,7 +112,7 @@ function App({ allowMaala = false }) {
       </div>
 
       <div className="flex flex-col items-center mt-3 z-10 flex-shrink-0">
-        <div className="text-[70px] font-light leading-none text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]">{count}</div>
+        <div className="text-[70px] font-light leading-none text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]">{displayCount}</div>
         <div className="flex items-center gap-2 mt-1 text-accent opacity-80 text-base tracking-widest relative z-20" onClick={(e) => e.stopPropagation()}>
           <label>Max:</label>
           <input 
@@ -108,7 +132,7 @@ function App({ allowMaala = false }) {
         <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-1 bg-[#3a2b21] z-[1] shadow-[inset_0_0_2px_rgba(0,0,0,0.8)]"></div>
         <div className={`relative z-[2] h-[450px] w-[120px] flex flex-col items-center ${animating ? 'sliding-down' : ''}`} ref={containerRef}>
           {slots.map((slot) => {
-            const beadIndex = count + (5 - slot);
+            const beadIndex = position + (5 - slot);
             // Hide beads that are "before" the start of the string
             if (beadIndex < 0) return null;
 
@@ -126,7 +150,7 @@ function App({ allowMaala = false }) {
             return (
               <div 
                 key={slot} 
-                className="bead-wrap absolute left-1/2 w-[80px] h-[80px] will-change-transform" 
+                className="bead-wrap absolute left-1/2 w-[80px] h-[80px] will-change-transform flex justify-center items-center" 
                 style={{ 
                   top: `${currentTop}px`,
                   opacity,
@@ -134,7 +158,7 @@ function App({ allowMaala = false }) {
                   transition: animating ? 'top 0.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s, transform 0.2s' : 'none'
                 }}
               >
-                <div className={`w-full h-full rounded-full relative flex justify-center items-center ${getBeadClass(beadIndex)}`}></div>
+                <div className={`rounded-full relative flex justify-center items-center ${getBeadClass(beadIndex)}`}></div>
               </div>
             );
           })}
