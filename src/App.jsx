@@ -66,9 +66,9 @@ function App({ allowMaala = false }) {
   };
 
   return (
-    <div className={`w-full max-w-[480px] h-screen mx-auto flex flex-col relative bg-[radial-gradient(circle_at_50%_30%,#2A2522_0%,#12100E_70%)] theme-${mode}`} onClick={handleChant}>
-      <div className="pt-10 px-5 pb-5 text-center z-10 glass-panel mt-4 mx-4">
-        <h1 className="text-3xl text-accent tracking-[2px] uppercase mb-2">Chant</h1>
+    <div className={`w-full max-w-[480px] h-[100dvh] mx-auto flex flex-col relative bg-[radial-gradient(circle_at_50%_30%,#2A2522_0%,#12100E_70%)] theme-${mode}`} onClick={handleChant}>
+      <div className="pt-6 px-5 pb-4 text-center z-10 glass-panel mt-4 flex-shrink-0 mx-4">
+        <h1 className="text-2xl text-accent tracking-[2px] uppercase mb-1">Chant</h1>
         {allowMaala && (
           <div className="flex justify-center gap-4 mt-4">
             <button 
@@ -87,8 +87,8 @@ function App({ allowMaala = false }) {
         )}
       </div>
 
-      <div className="flex flex-col items-center mt-5 z-10">
-        <div className="text-[80px] font-light leading-none text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]">{count}</div>
+      <div className="flex flex-col items-center mt-3 z-10 flex-shrink-0">
+        <div className="text-[70px] font-light leading-none text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]">{count}</div>
         <div className="flex items-center gap-2 mt-1 text-accent opacity-80 text-base tracking-widest relative z-20" onClick={(e) => e.stopPropagation()}>
           <label>Max:</label>
           <input 
@@ -101,7 +101,10 @@ function App({ allowMaala = false }) {
         </div>
       </div>
 
-      <div className="flex-1 relative overflow-hidden flex justify-center items-center cursor-pointer touch-manipulation">
+      <div 
+        className="flex-1 relative overflow-hidden flex justify-center items-center cursor-pointer touch-manipulation"
+        style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }}
+      >
         <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-1 bg-[#3a2b21] z-[1] shadow-[inset_0_0_2px_rgba(0,0,0,0.8)]"></div>
         <div className={`relative z-[2] h-[450px] w-[120px] flex flex-col items-center ${animating ? 'sliding-down' : ''}`} ref={containerRef}>
           {slots.map((slot) => {
@@ -138,11 +141,11 @@ function App({ allowMaala = false }) {
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-0 right-0 text-center text-white/30 text-sm pointer-events-none animate-pulse">
+      <div className="absolute bottom-6 left-0 right-0 text-center text-white/30 text-sm pointer-events-none animate-pulse">
         Tap anywhere to count
       </div>
 
-      <button className="absolute bottom-10 right-8 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] p-3 rounded-full text-accent opacity-70 transition-opacity duration-300 hover:opacity-100 flex items-center justify-center backdrop-blur-md z-[50]" onClick={handleReset} aria-label="Reset Counter">
+      <button className="absolute bottom-6 right-6 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] p-3 rounded-full text-accent opacity-70 transition-opacity duration-300 hover:opacity-100 flex items-center justify-center backdrop-blur-md z-[50]" onClick={handleReset} aria-label="Reset Counter">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>

@@ -4,12 +4,12 @@
 
 @layer base {
   body {
-    @apply font-sans bg-bg text-text min-h-screen flex items-center justify-center overflow-hidden;
+    @apply font-sans bg-bg text-text min-h-[100dvh] flex items-center justify-center overflow-hidden;
     user-select: none;
   }
   
   #root {
-    @apply w-full h-screen;
+    @apply w-full h-[100dvh];
   }
   
   h1, h2, h3, h4, h5, h6 {
