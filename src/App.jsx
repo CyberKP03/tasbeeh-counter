@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './App.css';
 
 const BEAD_SIZE = 80;
@@ -31,10 +31,34 @@ function App({ allowMaala = false }) {
   const [maxCount, setMaxCount] = useState(100);
   const [animating, setAnimating] = useState(false);
   const containerRef = useRef(null);
+  const threadGroupRef = useRef(null);
+  const [permissionRequested, setPermissionRequested] = useState(false);
+
+  useEffect(() => {
+    const handleOrientation = (event) => {
+      let tilt = event.gamma;
+      if (tilt === null) return;
+      // clamp tilt safely
+      tilt = Math.max(-45, Math.min(45, tilt));
+      
+      // Update global CSS variable for the tassel to swing
+      document.documentElement.style.setProperty('--swing', `${tilt}deg`);
+    };
+    
+    window.addEventListener('deviceorientation', handleOrientation);
+    return () => window.removeEventListener('deviceorientation', handleOrientation);
+  }, []);
 
   const displayCount = getDisplayCount(position, mode);
 
   const handleChant = () => {
+    if (!permissionRequested) {
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission().catch(console.error);
+      }
+      setPermissionRequested(true);
+    }
+    
     if (animating || displayCount >= maxCount) return;
     
     // Optionally trigger a subtle vibration if supported

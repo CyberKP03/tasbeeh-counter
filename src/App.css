@@ -73,13 +73,16 @@
   position: absolute;
   top: 100%;
   left: 50%;
-  transform: translateX(-50%);
+  margin-left: -7px;
   width: 14px;
   height: 60px;
   background: repeating-linear-gradient(90deg, #D4AF37, #D4AF37 2px, #8A6327 2px, #8A6327 4px);
   border-radius: 0 0 10px 10px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.5);
   z-index: -1;
+  transform-origin: center top;
+  transform: rotate(var(--swing, 0deg));
+  transition: transform 0.1s ease-out;
 }
 .bead.imam::after {
   display: none; /* Hide hole for imam */
